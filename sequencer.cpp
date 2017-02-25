@@ -5,12 +5,13 @@
 #define SEQ_LIST_LENGTH 30
 
 mbot_command_t seq_list[SEQ_LIST_LENGTH];
+mbot_command_t seq_single_last_command;
 int seq_index = 0;
 int seq_play_index = 0;
 unsigned long seq_last_timestamp = 0;
 
 enum seq_run_status_t {
-    SEQ_STATUS_IDLE, SEQ_STATUS_PLAY, SEQ_STATUS_SINGLE
+    SEQ_STATUS_IDLE, SEQ_STATUS_PLAY, SEQ_STATUS_SINGLE, SEQ_STATUS_SINGLE_RUNNING
 };
 
 seq_run_status_t seq_run_status = SEQ_STATUS_IDLE;
@@ -40,9 +41,9 @@ void seq_add(mbot_command_t command) {
 }
 
 void seq_run_single(mbot_command_t command) {
-    seq_last_timestamp = millis();
+    seq_last_timestamp = 0;
     seq_run_status = SEQ_STATUS_SINGLE;
-    seq_send_command(command);
+    seq_single_last_command = command;
 }
 
 void seq_loop() {
@@ -59,6 +60,10 @@ void seq_loop() {
             }
         }
         else if (seq_run_status == SEQ_STATUS_SINGLE) {
+            seq_send_command(seq_single_last_command);
+            seq_run_status = SEQ_STATUS_SINGLE_RUNNING;
+        }
+        else if (seq_run_status == SEQ_STATUS_SINGLE_RUNNING) {
             seq_send_command(MOVE_STOP);
             seq_run_status = SEQ_STATUS_IDLE;
         }
