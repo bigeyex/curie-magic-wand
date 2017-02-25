@@ -16,6 +16,7 @@ void on_connected() {
     Serial.println("Connected");
     ble_write(beepcmd, 10);
     delay(1000);
+    // use seq_run_single to run a single command;
     seq_add(MOVE_FORWARD);
     seq_add(MOVE_BACKWARD);
     seq_add(MOVE_LEFT);

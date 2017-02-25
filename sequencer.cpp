@@ -40,7 +40,7 @@ void seq_add(mbot_command_t command) {
 }
 
 void seq_run_single(mbot_command_t command) {
-    seq_last_timestamp = 0;
+    seq_last_timestamp = millis();
     seq_run_status = SEQ_STATUS_SINGLE;
     seq_send_command(command);
 }
